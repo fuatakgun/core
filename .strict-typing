@@ -28,6 +28,7 @@ homeassistant.components.device_tracker.*
 homeassistant.components.dnsip.*
 homeassistant.components.dunehd.*
 homeassistant.components.elgato.*
+homeassistant.components.energy.*
 homeassistant.components.fitbit.*
 homeassistant.components.fritzbox.*
 homeassistant.components.frontend.*
