@@ -12,6 +12,8 @@ PLATFORMS: list[str] = [Platform.SENSOR]
 
 
 async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
+    if DOMAIN not in hass.data:
+        hass.data[DOMAIN] = {}
     """Set up Hyundai / Kia Connect from a config entry."""
     coordinator = HyundaiKiaConnectDataUpdateCoordinator(hass, config_entry)
     await coordinator.async_refresh()
