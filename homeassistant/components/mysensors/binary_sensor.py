@@ -1,4 +1,5 @@
 """Support for MySensors binary sensors."""
+
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -21,7 +22,7 @@ from .const import MYSENSORS_DISCOVERY, DiscoveryInfo
 from .helpers import on_unload
 
 
-@dataclass
+@dataclass(frozen=True)
 class MySensorsBinarySensorDescription(BinarySensorEntityDescription):
     """Describe a MySensors binary sensor entity."""
 
@@ -103,8 +104,8 @@ class MySensorsBinarySensor(mysensors.device.MySensorsChildEntity, BinarySensorE
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         """Set up the instance."""
         super().__init__(*args, **kwargs)
-        pres = self.gateway.const.Presentation
-        self.entity_description = SENSORS[pres(self.child_type).name]
+        presentation = self.gateway.const.Presentation
+        self.entity_description = SENSORS[presentation(self.child_type).name]
 
     @property
     def is_on(self) -> bool:

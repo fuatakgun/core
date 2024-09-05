@@ -1,10 +1,11 @@
 """Test the Fully Kiosk Browser switches."""
+
 from unittest.mock import MagicMock
 
+from homeassistant.components import switch
 from homeassistant.components.fully_kiosk.const import DOMAIN
-import homeassistant.components.switch as switch
 from homeassistant.const import ATTR_ENTITY_ID
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, ServiceResponse
 from homeassistant.helpers import device_registry as dr, entity_registry as er
 
 from tests.common import MockConfigEntry, async_fire_mqtt_message
@@ -107,19 +108,35 @@ async def test_switches_mqtt_update(
     assert entity
     assert entity.state == "on"
 
-    async_fire_mqtt_message(hass, "fully/event/onScreensaverStart/abcdef-123456", "{}")
+    async_fire_mqtt_message(
+        hass,
+        "fully/event/onScreensaverStart/abcdef-123456",
+        '{"deviceId": "abcdef-123456","event": "onScreensaverStart"}',
+    )
     entity = hass.states.get("switch.amazon_fire_screensaver")
     assert entity.state == "on"
 
-    async_fire_mqtt_message(hass, "fully/event/onScreensaverStop/abcdef-123456", "{}")
+    async_fire_mqtt_message(
+        hass,
+        "fully/event/onScreensaverStop/abcdef-123456",
+        '{"deviceId": "abcdef-123456","event": "onScreensaverStop"}',
+    )
     entity = hass.states.get("switch.amazon_fire_screensaver")
     assert entity.state == "off"
 
-    async_fire_mqtt_message(hass, "fully/event/screenOff/abcdef-123456", "{}")
+    async_fire_mqtt_message(
+        hass,
+        "fully/event/screenOff/abcdef-123456",
+        '{"deviceId": "abcdef-123456","event": "screenOff"}',
+    )
     entity = hass.states.get("switch.amazon_fire_screen")
     assert entity.state == "off"
 
-    async_fire_mqtt_message(hass, "fully/event/screenOn/abcdef-123456", "{}")
+    async_fire_mqtt_message(
+        hass,
+        "fully/event/screenOn/abcdef-123456",
+        '{"deviceId": "abcdef-123456","event": "screenOn"}',
+    )
     entity = hass.states.get("switch.amazon_fire_screen")
     assert entity.state == "on"
 
@@ -132,8 +149,10 @@ def has_subscribed(mqtt_mock: MqttMockHAClient, topic: str) -> bool:
     return False
 
 
-def call_service(hass, service, entity_id):
+async def call_service(
+    hass: HomeAssistant, service: str, entity_id: str
+) -> ServiceResponse:
     """Call any service on entity."""
-    return hass.services.async_call(
+    return await hass.services.async_call(
         switch.DOMAIN, service, {ATTR_ENTITY_ID: entity_id}, blocking=True
     )
